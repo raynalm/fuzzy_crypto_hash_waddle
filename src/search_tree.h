@@ -6,9 +6,7 @@
 
 typedef union node_t{
   union node_t *children[256];
-  struct {
-    int present[256];
-  };
+  int present[256];
 } node;
 
 typedef node *tree;

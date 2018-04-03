@@ -14,7 +14,7 @@
 #define C3 0x7465646279746573
 #define C 2
 #define D 4
-#define NB_ITER 10
+#define NB_ITER 1000
 
 #define UNSAFE_COLLISIONS_SEARCH
 
@@ -31,7 +31,6 @@ uint64_t siphash_2_4(uint64_t k[2], uint8_t *msg, unsigned mlen) {
   v2 = k[0] ^ C2;
   v3 = k[1] ^ C3;
 
-  printf("%jx, %jx, %jx, %jx\n", v0, v1, v2, v3);
 
   size_t w = ( (mlen+1)%8 == 0 ? (mlen+1)/8 : (mlen+1)/8 +1 );
   uint64_t *m = malloc(w*sizeof(uint64_t));
@@ -53,30 +52,22 @@ uint64_t siphash_2_4(uint64_t k[2], uint8_t *msg, unsigned mlen) {
   }
   m_i[7] = (uint8_t) (mlen % 256);
 
-  for (int i = 0; i < w; i++){
-    printf("m[%d] : %jx\n", i, m[i]);
-  }
 
 
   /* compression */
   for (size_t i = 0; i < w; i++) {
-    printf("loop in  %jx, %jx, %jx, %jx\n", v0, v1, v2, v3);
     v3 ^= m[i];
     for (size_t j = 0; j < C; j++) {
       sipround(&v0, &v1, &v2, &v3);
     }
     v0 ^= m[i];
-    printf("loop out %jx, %jx, %jx, %jx\n", v0, v1, v2, v3);
   }
 
-  printf("___%jx, %jx, %jx, %jx\n", v0, v1, v2, v3);
     /* finalisation */
   v2 ^= 0xff;
-  printf("___%jx, %jx, %jx, %jx\n", v0, v1, v2, v3);
   for (int i =0; i < D; i++) {
     sipround(&v0, &v1, &v2, &v3);
   }
-  printf("%jx, %jx, %jx, %jx\n", v0, v1, v2, v3);
 
   free(m);
   return (v0 ^ v1 ^ v2 ^ v3);
@@ -105,7 +96,7 @@ void left_rotation(uint64_t *v, int n) {
 }
 
 uint32_t sip_hash_fix32(uint32_t k, uint32_t m){
-  uint64_t k128[2] = {0, (uint64_t)k};
+  uint64_t k128[2] = {(uint64_t)k, (uint64_t)k};
   //uint8_t *m8 = malloc(4*sizeof(uint8_t));
   //*((uint32_t *)m8) = m;
   uint32_t result = (uint32_t)siphash_2_4(k128, (uint8_t *)&m, 4);
@@ -127,30 +118,27 @@ void coll_search(uint32_t k, uint32_t (*fun)(uint32_t, uint32_t)) {
 #endif
 
   free_it_all();
-  printf("%ju ", iter);
 }
 
 int main(int argc, char *argv[]) {
-  uint64_t k[2] = {0x0706050403020100, 0x0f0e0d0c0b0a0908};
-  uint8_t msg[] = {0, 1, 2, 3, 4, 5, 6, 7};//, 8, 9, 10, 11, 12, 13, 14, 15};
-  printf("msg : %jx\n", *(uint64_t *)msg);
-  //uint8_t *msg = NULL;
-  unsigned mlen = 8;
-  //uint64_t k[2] = {0};
-  printf("0x%jx \n", siphash_2_4(k, msg, mlen));
+  /* uint64_t k[2] = {0x0706050403020100, 0x0f0e0d0c0b0a0908}; */
+  /* uint8_t msg[] = {0, 1, 2, 3, 4, 5, 6, 7};//, 8, 9, 10, 11, 12, 13, 14, 15}; */
+  /* //uint8_t *msg = NULL; */
+  /* unsigned mlen = 8; */
+  /* //uint64_t k[2] = {0}; */
 
-  /* size_t nb_iter; */
-  /* if (argc < 2){ */
-  /*   nb_iter = NB_ITER; */
-  /* } else { */
-  /*   nb_iter = atoi(argv[1]); */
-  /* } */
+  size_t nb_iter;
+  if (argc < 2){
+    nb_iter = NB_ITER;
+  } else {
+    nb_iter = atoi(argv[1]);
+  }
 
-  /* srand(time(NULL)); */
-  /* some_uint32_t = (uint32_t) rand(); */
+  srand(time(NULL));
+  some_uint32_t = (uint32_t) rand();
 
-  /* for (size_t i = 0; i < nb_iter; i++){ */
-  /*   coll_search(rand(), sip_hash_fix32); */
-  /* } */
+  for (size_t i = 0; i < nb_iter; i++){
+    coll_search(rand(), sip_hash_fix32);
+  }
   return 0;
 }

@@ -13,8 +13,8 @@ uint64_t twine_perm_z(uint64_t input) {
   }
 
   int bit;
-  for (size_t i = 1; i < 35; i++) {
-    for (size_t j = 0; j < 7; j++) {
+  for (size_t i = 1; i <= 35; i++) {
+    for (size_t j = 0; j <= 7; j++) {
       bit = (S[(X[2*j] >> i) ^ 0] & 1U) ^ ((X[2*j+1] >> i) & 1U);
       if (bit) {
         X[2*j+1] |= (bit << i);
@@ -22,7 +22,7 @@ uint64_t twine_perm_z(uint64_t input) {
         X[2-j+1] &= ~(bit << i);
       }
     }
-    for (size_t h = 0; h < 7; h++) {
+    for (size_t h = 0; h <= 7; h++) {
       bit = (X[h] >> i) & 1U;
       if (bit) {
         X[PI[h]] |= (bit << i);
@@ -31,7 +31,7 @@ uint64_t twine_perm_z(uint64_t input) {
       }
     }
   }
-  for (size_t j = 0; j < 7; j++) {
+  for (size_t j = 0; j <= 7; j++) {
 
   }
 

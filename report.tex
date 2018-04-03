@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\title{Cryptology : study of SipHash-2-4}
+\author{Maxime Raynal, }
+
+\begin{document}
+\maketitle
+
+
+This project is about the implementation and search for collisions for the SipHash-2-4
+
+\begin{itemize}
+\item[1] cf sip\_h.c
+
+\item[2] The key in SipHash-2-4 is 128 bits large, so we have a key space with a size of $2^{128}$. It is not ridiculous, but still too small for today's standarts, since finding a collision would cost only the square root of this size, $2^{64}$, which is not big enough. So it is definitly possible to find a collision. 
+To search the entire key space would still be costy, but eventually not out of reach. That's why we think it is wiser to generally chose larger key spaces, with keys at least 512 bits, if not more.
+
+\item[3] We chose a very simple way to build such an injection : \\
+$\Phi : \begin{cases}
+	2^{64} \rightarrow 2^{128}\\
+	k \mapsto k || k\\
+		\end{cases}$
+
+\item[4] Here is the implementation we decided to use to store the results. It is a four layers hash table. 
+
+\begin{lstlisting}[language = C]
+typedef union node_t{
+  union node_t *children[256];
+  int present[256];
+} node;
+
+typedef node *tree;
+\end{lstlisting}
+
+This structure is a 32-ary tree on the first three levels, the last level being used to store the results in the integer array \textit{present}.\\
+On the first level, we watch the eight first bits of the number obtained. This gives an integer between 0 and 31, say $i_1$, so we go to the $i_1^{th}$ index in the array of tree nodes. We repeat the process for the second and third layer. On the fourth layer, there is no more indirection, but a direct check on the last 4 bits.
+This structure has a limited stamp on the memory (mallocs are done on the fly) and the very low complexity of a has table, with the easiest possible hash function to discriminate numbers.
+
+To allow for a simpler memory allocation management, we do store all the tree nodes in lists of arrays.
+\begin{lstlisting}[language = C]
+#define MALLOC_BATCH 1024
+
+struct node_list_t {
+  struct node_list_t *next;
+  node *node_array;
+};
+typedef struct node_list_t *node_list;
+\end{lstlisting}
+This has two advantages : first, there is a little gain of speed, since the calls to malloc are more sparse. When one list node is allocated, it is one call to malloc to dedicate enough space for \textit{MALLOC_BATCH} tree nodes. The second advantage is that the memory is then much easier to free.
+
+\item
+\end{itemize}
+
+\end{document}
