@@ -2,7 +2,7 @@ import subprocess
 import matplotlib.pyplot as plt
 import numpy as np
 
-SIP_H_NB_RUNS = 10000
+SIP_H_NB_RUNS = 100
 NB_BINS = 100
 
 

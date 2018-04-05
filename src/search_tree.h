@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 
-#define MALLOC_BATCH 1024
+#define MALLOC_BATCH 65536
 
 
 typedef union node_t{

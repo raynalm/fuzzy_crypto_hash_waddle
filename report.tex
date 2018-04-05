@@ -6,7 +6,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \title{Cryptology : study of SipHash-2-4}
-\author{Maxime Raynal, }
+\author{Maxime Raynal, Iyed Ben Rejeb}
 
 \begin{document}
 \maketitle
@@ -22,7 +22,7 @@ To search the entire key space would still be costy, but eventually not out of r
 
 \item[3] We chose a very simple way to build such an injection : \\
 $\Phi : \begin{cases}
-	2^{64} \rightarrow 2^{128}\\
+	2^{32} \rightarrow 2^{64}\\
 	k \mapsto k || k\\
 		\end{cases}$
 
@@ -51,7 +51,7 @@ struct node_list_t {
 };
 typedef struct node_list_t *node_list;
 \end{lstlisting}
-This has two advantages : first, there is a little gain of speed, since the calls to malloc are more sparse. When one list node is allocated, it is one call to malloc to dedicate enough space for \textit{MALLOC_BATCH} tree nodes. The second advantage is that the memory is then much easier to free.
+This has two advantages : first, there is a little gain of speed, since the calls to malloc are more sparse. When one list node is allocated, it is one call to malloc to dedicate enough space for \textit{MALLOC\_BATCH} tree nodes. The second advantage is that the memory is then much easier to free.
 
 \item
 \end{itemize}

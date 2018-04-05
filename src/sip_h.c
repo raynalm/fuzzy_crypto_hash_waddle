@@ -116,7 +116,7 @@ void coll_search(uint32_t k, uint32_t (*fun)(uint32_t, uint32_t)) {
 #else
   while (!is_in(t, (*fun)(k, iter++)) && iter < ITER_MAX);
 #endif
-
+  printf("%jd ", iter-1);
   free_it_all();
 }
 
